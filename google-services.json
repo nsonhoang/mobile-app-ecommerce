@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "535958216452",
+    "project_id": "nestjs-ecommerce-book",
+    "storage_bucket": "nestjs-ecommerce-book.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:535958216452:android:5f1c2e53e858df8abbfa51",
+        "android_client_info": {
+          "package_name": "com.hoangshpy.mobileapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAwPXozHe0RMDIqyHKPU_nwHARuZd-C5eE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
