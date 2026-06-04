@@ -1,9 +1,9 @@
 import Dialog from "@/components/Dialog";
 import { FontSize, GLOBAL_COLOR, Spacing } from "@/constants/globalValue";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import { useState } from "react";
-import { Text, TouchableOpacity, View } from "react-native";
+import { Text, TouchableOpacity, View, Alert, ActivityIndicator } from "react-native";
 import {
   CodeField,
   Cursor,
@@ -11,8 +11,11 @@ import {
   useClearByFocusCell,
 } from "react-native-confirmation-code-field";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useMutation } from "@tanstack/react-query";
+import { AuthService } from "@/services/AuthService";
 
 function ConfirmOtpScreen() {
+  const { tokenOtp } = useLocalSearchParams<{ tokenOtp: string }>();
   const [value, setValue] = useState("");
   const [isSussess, setIsSuccess] = useState<boolean>(false);
   const CELL_COUNT = 6;
@@ -27,9 +30,21 @@ function ConfirmOtpScreen() {
     setValue,
   });
 
+  const verifyOtpMutation = useMutation({
+    mutationFn: (otp: string) => AuthService.verifyOtp(tokenOtp, otp),
+    onSuccess: () => {
+      setIsSuccess(true);
+    },
+    onError: (error: any) => {
+      console.error("OTP verification failed:", error);
+      const msg = error?.response?.data?.message || "Mã OTP không hợp lệ hoặc đã hết hạn!";
+      Alert.alert("Lỗi", msg);
+    },
+  });
+
   const onConfirm = () => {
-    console.log("OTP entered:", value);
-    setIsSuccess(true);
+    if (value.length !== CELL_COUNT || verifyOtpMutation.isPending) return;
+    verifyOtpMutation.mutate(value);
   };
 
   return (
@@ -128,18 +143,26 @@ function ConfirmOtpScreen() {
               paddingHorizontal: Spacing.lg,
               borderRadius: 10,
               marginTop: Spacing.md,
+              minWidth: 120,
+              alignItems: "center",
+              justifyContent: "center",
             }}
             onPress={onConfirm}
+            disabled={verifyOtpMutation.isPending}
           >
-            <Text
-              style={{
-                color: GLOBAL_COLOR.neutral,
-                fontFamily: "Inter_700Bold",
-                fontSize: FontSize.lg,
-              }}
-            >
-              XÁC NHẬN
-            </Text>
+            {verifyOtpMutation.isPending ? (
+              <ActivityIndicator size="small" color="#ffffff" />
+            ) : (
+              <Text
+                style={{
+                  color: GLOBAL_COLOR.neutral,
+                  fontFamily: "Inter_700Bold",
+                  fontSize: FontSize.lg,
+                }}
+              >
+                XÁC NHẬN
+              </Text>
+            )}
           </TouchableOpacity>
         </View>
 

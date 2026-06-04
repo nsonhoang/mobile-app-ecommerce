@@ -19,3 +19,6 @@ export const FontSize = {
   xl: 24,
   xxl: 32,
 };
+
+export const API_URL = "http://192.168.1.183:3000";
+

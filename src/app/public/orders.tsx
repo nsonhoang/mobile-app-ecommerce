@@ -1,7 +1,10 @@
 import ButtonSelectStatus from "@/components/ButtonSelectStatus";
 import CartItemBookOrder from "@/components/CartItemBookOrder";
+import RequireLogin from "@/components/RequireLogin";
 import { FontSize, GLOBAL_COLOR, Spacing } from "@/constants/globalValue";
+import { useAuthStore } from "@/hooks/useAuthStore";
 import { formatMoney } from "@/utils/formatMoney";
+import { router } from "expo-router";
 import { useState } from "react";
 import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -16,6 +19,37 @@ const orderStatus = [
 
 function OrderScreen() {
   const [selectedStatus, setSelectedStatus] = useState<string>("all");
+  const { user } = useAuthStore();
+
+  if (!user) {
+    return (
+      <SafeAreaView
+        style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+      >
+        <RequireLogin>
+          <TouchableOpacity
+            style={{
+              backgroundColor: GLOBAL_COLOR.primary,
+              padding: Spacing.md,
+              borderRadius: 5,
+              marginTop: Spacing.md,
+            }}
+            onPress={() => router.push("/auth")}
+          >
+            <Text
+              style={{
+                color: "#ffff",
+                fontSize: FontSize.md,
+                fontFamily: "Inter_700Bold",
+              }}
+            >
+              Đăng nhập ngay
+            </Text>
+          </TouchableOpacity>
+        </RequireLogin>
+      </SafeAreaView>
+    );
+  }
   return (
     <ScrollView showsVerticalScrollIndicator={false}>
       <SafeAreaView style={{ flex: 1, padding: Spacing.md }}>
@@ -157,7 +191,7 @@ function OrderScreen() {
                         color: "#fff",
                       }}
                     >
-                      Mua lại
+                      Mua Lại
                     </Text>
                   </TouchableOpacity>
                 </View>

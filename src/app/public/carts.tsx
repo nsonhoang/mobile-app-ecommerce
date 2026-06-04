@@ -1,10 +1,13 @@
 import CartItem from "@/components/CartItem";
 import ConfirmCheckerCart from "@/components/ConfirmCheckerCarts";
+import RequireLogin from "@/components/RequireLogin";
 import Skeleton from "@/components/Skeleton";
 import { FontSize, GLOBAL_COLOR, Spacing } from "@/constants/globalValue";
+import { useAuthStore } from "@/hooks/useAuthStore";
 import { Ionicons } from "@expo/vector-icons";
+import { router } from "expo-router";
 import { useMemo, useState } from "react";
-import { Pressable, Text, View } from "react-native";
+import { Pressable, Text, TouchableOpacity, View } from "react-native";
 import { FlatList } from "react-native-gesture-handler";
 import Animated, { SlideInDown, SlideOutDown } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -95,6 +98,7 @@ export const mockCartItems = [
 function CartScreen() {
   const [checkedItems, setCheckedItems] = useState<string[]>([]);
   const [isLoadingConfirm, setIsLoadingConfirm] = useState(false);
+  const { user } = useAuthStore();
 
   // useEffect(() => {
   //   console.log("Checked items:", isLoadingConfirm, checkedItems);
@@ -128,6 +132,36 @@ function CartScreen() {
   const calculateShippingFee = useMemo(() => {
     return checkedItems.length > 0 ? 30000 : 0;
   }, [checkedItems.length]);
+
+  if (!user) {
+    return (
+      <SafeAreaView
+        style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+      >
+        <RequireLogin>
+          <TouchableOpacity
+            style={{
+              backgroundColor: GLOBAL_COLOR.primary,
+              padding: Spacing.md,
+              borderRadius: 5,
+              marginTop: Spacing.md,
+            }}
+            onPress={() => router.push("/auth")}
+          >
+            <Text
+              style={{
+                color: "#ffff",
+                fontSize: FontSize.md,
+                fontFamily: "Inter_700Bold",
+              }}
+            >
+              Đăng nhập ngay
+            </Text>
+          </TouchableOpacity>
+        </RequireLogin>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView

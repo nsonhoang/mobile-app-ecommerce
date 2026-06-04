@@ -11,9 +11,13 @@ import {
   Text,
   TouchableOpacity,
   View,
+  Alert,
+  ActivityIndicator,
 } from "react-native";
 
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useMutation } from "@tanstack/react-query";
+import { AuthService } from "@/services/AuthService";
 
 type RegisterFormValues = {
   email: string;
@@ -46,9 +50,27 @@ function RegisterScreen() {
 
   const passwordValue = watch("password");
 
+  const registerMutation = useMutation({
+    mutationFn: AuthService.register,
+    onSuccess: (otpToken) => {
+      // Redirect to OTP verification screen with the token
+      router.push(`/auth/${otpToken}`);
+    },
+    onError: (error: any) => {
+      console.error("Register error:", error);
+      const msg = error?.response?.data?.message || "Đăng ký thất bại. Vui lòng kiểm tra lại thông tin!";
+      Alert.alert("Lỗi", msg);
+    },
+  });
+
   const onSubmit = async (data: RegisterFormValues) => {
-    console.log("Register payload:", data);
-    router.push("/auth/[tokenOtp]");
+    registerMutation.mutate({
+      email: data.email,
+      password: data.password,
+      confirmPassword: data.confirmPassword,
+      name: data.name,
+      phone: data.phone || undefined,
+    });
   };
 
   return (
@@ -263,11 +285,19 @@ function RegisterScreen() {
 
               {/* nút đăng ký */}
               <TouchableOpacity
-                style={[styles.button, !isValid && styles.buttonDisabled]}
+                style={[
+                  styles.button,
+                  (!isValid || isSubmitting || registerMutation.isPending) &&
+                    styles.buttonDisabled,
+                ]}
                 onPress={handleSubmit(onSubmit)}
-                disabled={!isValid || isSubmitting}
+                disabled={!isValid || isSubmitting || registerMutation.isPending}
               >
-                <Text style={styles.buttonText}>Đăng ký</Text>
+                {registerMutation.isPending ? (
+                  <ActivityIndicator size="small" color="#ffffff" />
+                ) : (
+                  <Text style={styles.buttonText}>Đăng ký</Text>
+                )}
               </TouchableOpacity>
               {/* đường kẻ */}
               <View

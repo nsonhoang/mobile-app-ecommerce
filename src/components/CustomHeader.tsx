@@ -10,7 +10,7 @@ export default function CustomHeader({ title = "App" }: { title?: string }) {
       <View style={styles.row}>
         <View style={styles.left}>
           <Pressable
-            onPress={() => router.push("/auth")}
+            // onPress={() => router.push("/")}
             hitSlop={8}
             accessibilityRole="button"
             style={{ padding: 6 }}

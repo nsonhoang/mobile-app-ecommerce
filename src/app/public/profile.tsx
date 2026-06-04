@@ -1,8 +1,10 @@
 import CartAvatar from "@/components/CartAvatar";
-import { FontSize, Spacing } from "@/constants/globalValue";
+import { FontSize, GLOBAL_COLOR, Spacing } from "@/constants/globalValue";
+import { useAuthStore } from "@/hooks/useAuthStore";
 import { Ionicons } from "@expo/vector-icons";
-import { useState } from "react";
+import { router } from "expo-router";
 import {
+  Alert,
   Pressable,
   StyleSheet,
   Text,
@@ -12,8 +14,43 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 function Profile() {
-  const [isFollowing, setIsFollowing] = useState<boolean>(false);
-  const [likes, setLikes] = useState<number>(128);
+  const { user, logout } = useAuthStore();
+
+  const handleLogout = () => {
+    Alert.alert("Đăng xuất", "Bạn có chắc chắn muốn đăng xuất?", [
+      { text: "Hủy", style: "cancel" },
+      { text: "Đăng xuất", style: "destructive", onPress: () => logout() },
+    ]);
+  };
+
+  if (!user) {
+    return (
+      <SafeAreaView
+        style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+      >
+        <Text> Vui lòng đăng nhập để xem thông tin cá nhân </Text>
+        <TouchableOpacity
+          style={{
+            backgroundColor: GLOBAL_COLOR.primary,
+            padding: Spacing.md,
+            borderRadius: 5,
+            marginTop: Spacing.md,
+          }}
+          onPress={() => router.push("/auth")}
+        >
+          <Text
+            style={{
+              color: "#ffff",
+              fontSize: FontSize.md,
+              fontFamily: "Inter_700Bold",
+            }}
+          >
+            Đăng nhập ngay
+          </Text>
+        </TouchableOpacity>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#f7f9fb" }}>
@@ -21,7 +58,7 @@ function Profile() {
         {/* khung Avatar và tên
          */}
         <CartAvatar
-          name="Nguyễn Văn A"
+          name={user?.name || "Người dùng"}
           size={100}
           onPress={() => {
             console.log("sẽ router tơi trang chỉnh sửa");
@@ -82,6 +119,7 @@ function Profile() {
               alignItems: "center",
               gap: Spacing.sm,
             }}
+            onPress={handleLogout}
           >
             <Ionicons name="log-out-outline" size={24} color="#e53935" />
             <Text
