@@ -1,3 +1,4 @@
+import { FontSize, GLOBAL_COLOR } from "@/constants/globalValue";
 import { Ionicons } from "@expo/vector-icons";
 import {
   Image,
@@ -70,8 +71,9 @@ const styles = StyleSheet.create({
   },
   name: {
     marginTop: 6,
-    fontSize: 12,
-    color: "#111827",
+    fontSize: FontSize.lg,
+    color: GLOBAL_COLOR.primary,
+    fontFamily: "Inter_700Bold",
     textAlign: "center",
   },
 });
