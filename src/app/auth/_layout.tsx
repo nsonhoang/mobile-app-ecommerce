@@ -8,6 +8,7 @@ export default function AuthLayout() {
         options={{
           title: "Sign in",
           headerShown: false,
+          animation: "slide_from_right",
         }}
       />
       <Stack.Screen

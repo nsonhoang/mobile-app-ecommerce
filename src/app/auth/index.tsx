@@ -1,32 +1,32 @@
+import Dialog from "@/components/Dialog";
 import { FontSize, GLOBAL_COLOR, Spacing } from "@/constants/globalValue";
+import { useAuthStore } from "@/hooks/useAuthStore";
+import { AuthService } from "@/services/AuthService";
 import { getFCMToken } from "@/utils/getFCMToken";
 import { requestNotificationPermission } from "@/utils/requestPermissionNotifications";
 import { FontAwesome6, Ionicons } from "@expo/vector-icons";
-import * as Device from "expo-device";
+import { useMutation } from "@tanstack/react-query";
 import { Image, ImageBackground } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
 import { useMemo, useState } from "react";
 import {
+  ActivityIndicator,
+  Alert,
   Platform,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
   View,
-  ActivityIndicator,
-  Alert,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useMutation } from "@tanstack/react-query";
-import { AuthService } from "@/services/AuthService";
-import { useAuthStore } from "@/hooks/useAuthStore";
-import { getDeviceId } from "@/services/api";
 
 export default function AuthIndex() {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [isSecureEntry, setIsSecureEntry] = useState<boolean>(true);
+  const [visibleDialog, setVisibleDialog] = useState<boolean>(false);
 
   const isFormValid = useMemo(() => {
     return email.trim().includes("@") && password.trim().length >= 6;
@@ -39,24 +39,34 @@ export default function AuthIndex() {
       try {
         // Temporarily save token so that subsequent profile fetch includes it
         useAuthStore.setState({ accessToken: data.accessToken });
-        
+
         // Fetch profile
         const userProfile = await AuthService.getProfile();
-        
+
         // Save user and token to store & secure store
-        await useAuthStore.getState().login(userProfile, data.accessToken, data.csrfToken);
-        
+        await useAuthStore
+          .getState()
+          .login(userProfile, data.accessToken, data.csrfToken);
+
         // Redirect to homepage
         router.replace("/public");
       } catch (profileError) {
-        console.error("Failed to fetch user profile after login:", profileError);
+        console.error(
+          "Failed to fetch user profile after login:",
+          profileError,
+        );
         useAuthStore.setState({ accessToken: null });
-        Alert.alert("Lỗi", "Không thể tải thông tin cá nhân. Vui lòng thử lại!");
+        Alert.alert(
+          "Lỗi",
+          "Không thể tải thông tin cá nhân. Vui lòng thử lại!",
+        );
       }
     },
     onError: (error: any) => {
       console.error("Login failed:", error);
-      const msg = error?.response?.data?.message || "Đăng nhập thất bại. Vui lòng kiểm tra kết nối mạng!";
+      const msg =
+        error?.response?.data?.message ||
+        "Đăng nhập thất bại. Vui lòng kiểm tra kết nối mạng!";
       Alert.alert("Thất bại", msg);
     },
   });
@@ -73,7 +83,7 @@ export default function AuthIndex() {
         fcmToken = token ?? null;
         console.log("FCM Token:", fcmToken);
       }
-      
+
       const deviceOs = Platform.OS;
 
       loginMutation.mutate({
@@ -87,8 +97,26 @@ export default function AuthIndex() {
     }
   };
 
+  const handleLoginWithGoogle = () => {
+    setVisibleDialog(true);
+  };
+
+  const handleLoginWithFacebook = () => {
+    setVisibleDialog(true);
+  };
+
   return (
     <SafeAreaView style={styles.safeArea}>
+      <Dialog
+        title="Chức năng này đang phát triển"
+        visible={visibleDialog}
+        onConfirm={() => {
+          setVisibleDialog(false);
+        }}
+        onCancel={() => {
+          setVisibleDialog(false);
+        }}
+      />
       <View style={styles.container}>
         {/* hình ảnh  */}
         <View>
@@ -182,7 +210,10 @@ export default function AuthIndex() {
 
         {/* nút đăng nhập */}
         <TouchableOpacity
-          style={[styles.button, (!isFormValid || loginMutation.isPending) && styles.buttonDisabled]}
+          style={[
+            styles.button,
+            (!isFormValid || loginMutation.isPending) && styles.buttonDisabled,
+          ]}
           onPress={handleSignIn}
           disabled={!isFormValid || loginMutation.isPending}
         >
@@ -229,7 +260,10 @@ export default function AuthIndex() {
             marginTop: Spacing.md,
           }}
         >
-          <TouchableOpacity style={styles.buttonLogo}>
+          <TouchableOpacity
+            style={styles.buttonLogo}
+            onPress={handleLoginWithGoogle}
+          >
             <Image
               source={require("@/assets/images/logo-google.png")}
               style={{ width: 30, height: 30 }}
@@ -237,7 +271,10 @@ export default function AuthIndex() {
             <Text>Google</Text>
           </TouchableOpacity>
           {/* face */}
-          <TouchableOpacity style={styles.buttonLogo}>
+          <TouchableOpacity
+            style={styles.buttonLogo}
+            onPress={handleLoginWithFacebook}
+          >
             <FontAwesome6 name="facebook" size={24} color="#1877f2" />
             <Text>Facebook</Text>
           </TouchableOpacity>

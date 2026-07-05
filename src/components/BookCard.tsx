@@ -2,7 +2,15 @@ import { FontSize, GLOBAL_COLOR } from "@/constants/globalValue";
 import { formatMoney } from "@/utils/formatMoney";
 import { Ionicons } from "@expo/vector-icons";
 import { ImageBackground } from "expo-image";
-import { Pressable, Text, TouchableOpacity, View } from "react-native";
+import { useRouter } from "expo-router";
+import {
+  Pressable,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  type DimensionValue,
+} from "react-native";
 
 interface BookCardProps {
   id: string;
@@ -10,10 +18,31 @@ interface BookCardProps {
   author: string;
   price: string;
   thumbnail: string;
+  cardWidth?: DimensionValue;
+  imageHeight?: number;
 }
-function BookCard({ id, title, author, price, thumbnail }: BookCardProps) {
+function BookCard({
+  id,
+  title,
+  author,
+  price,
+  thumbnail,
+  cardWidth = 120,
+  imageHeight = 160,
+}: BookCardProps) {
+  const router = useRouter();
+
+  const navigateToBookDetail = () => {
+    router.push({
+      pathname: "/other-screens/[detail-book-by-Id]",
+      params: { id } as any, // Type assertion to 'any' to bypass type checking
+    });
+  };
   return (
-    <TouchableOpacity onPress={() => console.log("id", id)}>
+    <TouchableOpacity
+      onPress={navigateToBookDetail}
+      style={[styles.card, { width: cardWidth }]}
+    >
       <View>
         <ImageBackground
           source={
@@ -21,7 +50,7 @@ function BookCard({ id, title, author, price, thumbnail }: BookCardProps) {
           }
           cachePolicy="memory-disk"
           imageStyle={{ borderRadius: 8, resizeMode: "cover" }}
-          style={{ width: 120, height: 160 }}
+          style={{ width: "100%", height: imageHeight }}
         >
           <View
             style={{
@@ -42,16 +71,21 @@ function BookCard({ id, title, author, price, thumbnail }: BookCardProps) {
             </Pressable>
           </View>
         </ImageBackground>
-        <View>
-          <Text style={{ fontSize: FontSize.sm, fontWeight: "regular" }}>
+        <View style={styles.info}>
+          <Text
+            numberOfLines={2}
+            style={{ fontSize: FontSize.sm, fontWeight: "regular" }}
+          >
             {title}
           </Text>
           <Text
+            numberOfLines={1}
             style={{ fontSize: FontSize.xs, color: GLOBAL_COLOR.secondary }}
           >
             {author}
           </Text>
           <Text
+            numberOfLines={1}
             style={{
               fontSize: FontSize.md,
               fontWeight: "bold",
@@ -65,5 +99,15 @@ function BookCard({ id, title, author, price, thumbnail }: BookCardProps) {
     </TouchableOpacity>
   );
 }
+
+const styles = StyleSheet.create({
+  card: {
+    flexShrink: 0,
+  },
+  info: {
+    marginTop: 6,
+    gap: 2,
+  },
+});
 
 export default BookCard;

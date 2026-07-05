@@ -2,7 +2,14 @@ import BookCard from "@/components/BookCard";
 import CategoryList from "@/components/CategoryList";
 import { Spacing } from "@/constants/globalValue";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
-import { FlatList, Pressable, TextInput, View } from "react-native";
+import {
+  Dimensions,
+  FlatList,
+  Pressable,
+  StyleSheet,
+  TextInput,
+  View,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const mockBooks = [
@@ -60,7 +67,21 @@ const mockBooks = [
     thumbnail: "https://example.com/pride-and-prejudice.jpg",
     rating: 4.7,
   },
+  {
+    id: "7",
+    title: "Pride and Prejudice",
+    author: "Jane Austen",
+    category: "Romance",
+    price: "149000",
+    thumbnail: "https://example.com/pride-and-prejudice.jpg",
+    rating: 4.7,
+  },
 ];
+
+const { width } = Dimensions.get("window");
+const numColumns = 2;
+const ITEM_GAP = Spacing.md;
+const ITEM_WIDTH = (width - Spacing.md * 2 - ITEM_GAP) / numColumns;
 
 export default function UiDemoScreen() {
   return (
@@ -68,12 +89,13 @@ export default function UiDemoScreen() {
       <FlatList
         data={mockBooks}
         keyExtractor={(item) => item.id}
-        numColumns={2}
-        columnWrapperStyle={{ gap: Spacing.md }}
-        contentContainerStyle={{ padding: Spacing.md, gap: Spacing.md }}
+        numColumns={numColumns}
+        key={`flatlist-cols-${numColumns}`} // Add a key to force re-render when numColumns changes
+        columnWrapperStyle={styles.columnWrapper}
+        contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
         ListHeaderComponent={
-          <View style={{ gap: Spacing.md }}>
+          <View style={{ gap: Spacing.md, marginBottom: Spacing.md }}>
             <View
               style={{
                 flexDirection: "row",
@@ -101,10 +123,8 @@ export default function UiDemoScreen() {
         renderItem={({ item }) => (
           <View
             style={{
-              flex: 1,
-              flexDirection: "row",
-              gap: Spacing.sm,
-              justifyContent: "center",
+              width: ITEM_WIDTH,
+              marginBottom: ITEM_GAP,
             }}
           >
             <BookCard
@@ -113,6 +133,8 @@ export default function UiDemoScreen() {
               author={item.author}
               price={item.price}
               thumbnail={item.thumbnail}
+              cardWidth={ITEM_WIDTH}
+              imageHeight={ITEM_WIDTH * 1.35}
             />
           </View>
         )}
@@ -120,3 +142,13 @@ export default function UiDemoScreen() {
     </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  content: {
+    padding: Spacing.md,
+    paddingBottom: Spacing.lg,
+  },
+  columnWrapper: {
+    justifyContent: "space-between",
+  },
+});

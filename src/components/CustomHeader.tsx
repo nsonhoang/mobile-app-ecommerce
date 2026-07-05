@@ -4,21 +4,35 @@ import { router } from "expo-router";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-export default function CustomHeader({ title = "App" }: { title?: string }) {
+interface CustomHeaderProps {
+  leftIcon?: React.ReactNode;
+  onLeftIconPress?: () => void;
+  title?: string;
+}
+
+export default function CustomHeader({
+  leftIcon,
+  onLeftIconPress,
+  title = "App",
+}: CustomHeaderProps) {
   return (
     <SafeAreaView edges={["top"]} style={styles.safeArea}>
       <View style={styles.row}>
         <View style={styles.left}>
-          <Pressable
-            // onPress={() => router.push("/")}
-            hitSlop={8}
-            accessibilityRole="button"
-            style={{ padding: 6 }}
-          >
-            <MaterialIcons name="menu" size={26} color="#111" />
-          </Pressable>
+          {leftIcon || (
+            <Pressable
+              // onPress={() => router.push("/")}
+              hitSlop={8}
+              accessibilityRole="button"
+            >
+              <MaterialIcons name="menu" size={26} color="#111" />
+            </Pressable>
+          )}
         </View>
-        <Text style={styles.title}>{title}</Text>
+
+        <Text style={styles.title} numberOfLines={1}>
+          {title}
+        </Text>
         <View style={styles.right}>
           <Pressable
             onPress={() => router.push("/public/explore")}

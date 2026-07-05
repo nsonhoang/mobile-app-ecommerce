@@ -1,4 +1,5 @@
 import CartAvatar from "@/components/CartAvatar";
+import RequireLogin from "@/components/RequireLogin";
 import { FontSize, GLOBAL_COLOR, Spacing } from "@/constants/globalValue";
 import { useAuthStore } from "@/hooks/useAuthStore";
 import { Ionicons } from "@expo/vector-icons";
@@ -28,26 +29,29 @@ function Profile() {
       <SafeAreaView
         style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
       >
-        <Text> Vui lòng đăng nhập để xem thông tin cá nhân </Text>
-        <TouchableOpacity
-          style={{
-            backgroundColor: GLOBAL_COLOR.primary,
-            padding: Spacing.md,
-            borderRadius: 5,
-            marginTop: Spacing.md,
-          }}
-          onPress={() => router.push("/auth")}
-        >
-          <Text
-            style={{
-              color: "#ffff",
-              fontSize: FontSize.md,
-              fontFamily: "Inter_700Bold",
-            }}
-          >
-            Đăng nhập ngay
-          </Text>
-        </TouchableOpacity>
+        <View style={{ justifyContent: "center", alignItems: "center" }}>
+          <RequireLogin>
+            <TouchableOpacity
+              style={{
+                backgroundColor: GLOBAL_COLOR.primary,
+                padding: Spacing.md,
+                borderRadius: 5,
+                marginTop: Spacing.md,
+              }}
+              onPress={() => router.push("/auth")}
+            >
+              <Text
+                style={{
+                  color: "#ffff",
+                  fontSize: FontSize.md,
+                  fontFamily: "Inter_700Bold",
+                }}
+              >
+                Đăng nhập ngay
+              </Text>
+            </TouchableOpacity>
+          </RequireLogin>
+        </View>
       </SafeAreaView>
     );
   }

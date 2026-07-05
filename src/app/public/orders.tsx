@@ -27,25 +27,27 @@ function OrderScreen() {
         style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
       >
         <RequireLogin>
-          <TouchableOpacity
-            style={{
-              backgroundColor: GLOBAL_COLOR.primary,
-              padding: Spacing.md,
-              borderRadius: 5,
-              marginTop: Spacing.md,
-            }}
-            onPress={() => router.push("/auth")}
-          >
-            <Text
+          <View style={{ justifyContent: "center", alignItems: "center" }}>
+            <TouchableOpacity
               style={{
-                color: "#ffff",
-                fontSize: FontSize.md,
-                fontFamily: "Inter_700Bold",
+                backgroundColor: GLOBAL_COLOR.primary,
+                padding: Spacing.md,
+                borderRadius: 5,
+                marginTop: Spacing.md,
               }}
+              onPress={() => router.push("/auth")}
             >
-              Đăng nhập ngay
-            </Text>
-          </TouchableOpacity>
+              <Text
+                style={{
+                  color: "#ffff",
+                  fontSize: FontSize.md,
+                  fontFamily: "Inter_700Bold",
+                }}
+              >
+                Đăng nhập ngay
+              </Text>
+            </TouchableOpacity>
+          </View>
         </RequireLogin>
       </SafeAreaView>
     );

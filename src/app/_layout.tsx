@@ -64,6 +64,7 @@ function RootLayoutNav() {
     <Stack>
       <Stack.Screen name="public" options={{ headerShown: false }} />
       <Stack.Screen name="auth" options={{ headerShown: false }} />
+      <Stack.Screen name="other-screens" options={{ headerShown: false }} />
     </Stack>
   );
 }
